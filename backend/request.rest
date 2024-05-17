@@ -1,0 +1,33 @@
+//GET http://localhost:3000/personal
+
+###
+//GET http://localhost:3000/personal/1
+
+###
+POST http://localhost:5000/checklist
+Content-Type: application/json
+{
+    "Chk_Rut": "22.222.222-2",
+    "Chk_Patente": "FZZT45",
+    "Km_salida": 9091,
+    "Km_llegada": 9031
+}
+
+###
+//PATCH http://localhost:3000/personal/1
+//Content-Type: application/json
+
+//{
+//    "Rut": "19.166.269-5",
+ //   "Nombre": "Jose",
+  //  "Apellidos": "Vargas Oyarzun",
+  //  "Sector": "Soporte TI",
+  //  "Email": "jvargas@cass.cl",
+  //  "Telefono": "234234234",
+  //  "Direccion": "Sargento Silva 375",
+  //  "Comuna": "Puerto Montt",
+  //  "Provincia": "Llanquihue"
+//}
+
+###
+//DELETE http://localhost:3000/personal/2

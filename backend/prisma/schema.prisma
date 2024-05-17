@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["relationJoins"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Personal {
+  Id     Int         @id @unique @default(autoincrement())
+  Rut    String      @unique
+  Nombre  String
+  Apellidos  String
+  Sector  String
+  Email String
+  Telefono String
+  Direccion  String
+  Comuna String
+  Provincia String
+  accesos  Accesos[]
+  p_vehiculo P_vehiculo[]
+  chk_vehiculo Chk_vehiculo[]
+  vacaciones Vacaciones[]
+  permisos Permisos[]
+}
+
+model Accesos {
+  Id          Int    @id @default(autoincrement())
+  A_Rut       String
+  username    String
+  password    String
+  pers_acceso   Personal   @relation(fields: [A_Rut], references: [Rut])
+}
+
+model Vehiculo {
+  Id          Int    @id @default(autoincrement())
+  Patente     String @unique
+  Marca       String
+  Modelo      String
+  Ano         Int
+  Fecha_ptte  String
+  Fecha_rvs   String
+  p_vehiculo  P_vehiculo[]
+  chk_vehiculo Chk_vehiculo[]
+}
+
+model P_vehiculo {
+  Id          Int    @id @default(autoincrement())
+  PV_Rut         String
+  PV_Patente     String
+  F_permiso   String
+  Validar     Int
+  pers_pvehiculo   Personal   @relation(fields: [PV_Rut], references: [Rut])
+  vehi_pvehiculo   Vehiculo   @relation(fields: [PV_Patente], references: [Patente])
+}
+
+model Chk_vehiculo {
+  Id          Int    @id @default(autoincrement())
+  Chk_Rut         String
+  Chk_Patente     String
+  Km_salida   Int
+  Km_llegada  Int
+  pers_chkvehiculo   Personal   @relation(fields: [Chk_Rut], references: [Rut])
+  vehi_chkvehiculo   Vehiculo   @relation(fields: [Chk_Patente], references: [Patente])
+}
+
+model Vacaciones {
+  Id                Int    @id @default(autoincrement())
+  V_Rut             String
+  Fecha_Salida      String
+  Dias_vacaciones   Int
+  pers_vacaciones   Personal   @relation(fields: [V_Rut], references: [Rut])
+}
+
+model Permisos {
+  Id          Int    @id @default(autoincrement())
+  P_Rut       String
+  F_permiso   String
+  Dias        Int
+  Descripcion String
+  personal   Personal   @relation(fields: [P_Rut], references: [Rut])
+}
