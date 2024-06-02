@@ -6,24 +6,19 @@ import useSWR, { useSWRConfig } from "swr";
 import { auth } from "../../firebase.js";
 import { onAuthStateChanged } from 'firebase/auth';
 import { TablePagination, Stack, Alert } from '@mui/material';
-import { DeleteForeverOutlined, EditOutlined, AddCircleOutline } from '@mui/icons-material';
+import { AddCircleOutline } from '@mui/icons-material';
 import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField'; // Agrega esta línea
+import Button from '@mui/material/Button'; // Agrega esta línea
 
 const PermisoVList = () => {
   const { mutate } = useSWRConfig();
-  const fetcher = async () => {
-    const response = await axios.get('http://localhost:5000/permisojoinv');
-    return response.data;
-  };
-
-  const redirectPath = "/permisosv";
   const navigate = useNavigate();
-  const { data } = useSWR("vehiculo", fetcher);
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -32,13 +27,20 @@ const PermisoVList = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
+  const fetcher = async (url) => {
+    const response = await axios.get(url, {
+      params: { page, pageSize: rowsPerPage }
+    });
+    return response.data;
+  };
+
+  const redirectPath = "/permisosv";
+  const { data } = useSWR(`http://localhost:5000/permisojoinv?page=${page}&pageSize=${rowsPerPage}`, fetcher);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUser(user);
       setLoading(false); // Indicamos que la autenticación ha terminado y se puede renderizar
-      if (user) {
-        navigate("/permisosv"); // Redirigir automáticamente al usuario autenticado a la vista protegida
-      }
     });
 
     return () => {
@@ -55,11 +57,6 @@ const PermisoVList = () => {
     setPage(0);
   };
 
-  const handleOpenDeleteDialog = (permisoId) => {
-    setDeleteId(permisoId);
-    setDeleteDialogOpen(true);
-  };
-
   const handleCloseDeleteDialog = () => {
     setDeleteId(null);
     setDeleteDialogOpen(false);
@@ -67,13 +64,13 @@ const PermisoVList = () => {
 
   if (loading) {
     return (
-      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
     );
   }
 
   const deletePermisoV = async (permisovId) => {
     await axios.delete(`http://localhost:5000/permisosv/${permisovId}`);
-    mutate('permisosv');
+    mutate('http://localhost:5000/permisojoinv');
     navigate(redirectPath);
     window.location.reload(); // Refrescar la página después de eliminar
   }
@@ -95,130 +92,85 @@ const PermisoVList = () => {
     );
   }
 
-  const filteredData = data.filter((permisosv) =>
+  // Imprimir data y searchTerm para depuración
+  console.log("Data:", data);
+  console.log("Search Term:", searchTerm);
+
+  const filteredData = data?.data?.filter((permisosv) =>
     permisosv.pers_pvehiculo.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
     permisosv.pers_pvehiculo.Apellidos.toLowerCase().includes(searchTerm.toLowerCase()) ||
     permisosv.vehi_pvehiculo.Marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
     permisosv.vehi_pvehiculo.Modelo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+);
 
-  // Renderizar vista protegida
+console.log("Data:", data);
+console.log("Search Term:", searchTerm);
+console.log("Filtered Data:", filteredData);
+
   return (
-    <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
-      <>
-        <h4><center>Permiso Vehiculos</center></h4><br></br>
+      <div className='sign-in-container max-w-4xl mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+        <>
+        <h4><center>Permiso Personal</center></h4><br />
         <div className="w-full">
-          <div className="row">
-            <div className="col-lg">
-            <input
-              type="text"
-              placeholder="Buscar por Rut..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 mb-3"
-            />
-            </div>
-            <div className="col-lg-1">
-              <Grid container sx={{ color: 'text.primary' }}>
-                <Link
-                  to="/permisosv/add"
-                  className="bg-blue-700 hover:bg-blue-400 border border-slate-200 text-white font-bold py-3 px-3 rounded-lg"
-                >
-                  <AddCircleOutline/>
-                </Link>
-              </Grid>
-            </div>
-          </div>
+          <Grid container spacing={2} alignItems="center">
+            <Grid item xs={8}>
+              <TextField
+                fullWidth
+                variant="outlined"
+                label="Buscar por Rut..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </Grid>
+            <Grid item xs={4} container justifyContent="flex-end">
+              <Button
+                component={Link}
+                to="/permisos/add"
+                variant="contained"
+                color="primary"
+                startIcon={<AddCircleOutline />}
+              >
+                Añadir
+              </Button>
+            </Grid>
+          </Grid>
           <div className="relative shadow rounded-lg mt-3">
             <table className='w-full text-sm text-left text-gray-500'>
-              <thead className='text-xs text-gray-700 upparcase bg-gray-100'>
-                <tr>
-                  <th className='py-3 px-1 text-center'>No</th>
-                  <th className='py-3 px-6'>Nombre</th>
-                  <th className='py-3 px-6'>Apellidos</th>
-                  <th className='py-3 px-6'>PV_Patente</th>
-                  <th className='py-3 px-6'>Marca</th>
-                  <th className='py-3 px-6'>Modelo</th>
-                  <th className='py-3 px-6'>Año</th>
-                  <th className='py-3 px-6'>F_permiso</th>
-                  <th className='py-3 px-6'>Validar</th>
-                  <th className='py-3 px-1 text-center'>Acción</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredData.map((permisosv, index)=>(
-                  <tr className="bg-white border-b" key={permisosv.Id}>
-                    <td className='py-3 px-1 text-center'>{index+1}</td>
-                    <td className='py3 px-6'>
-                      {permisosv.pers_pvehiculo.Nombre}
-                    </td>
-                    <td className='py3 px-6'>
-                      {permisosv.pers_pvehiculo.Apellidos}
-                    </td>
-                    <td className='py3 px-6'>
-                      {permisosv.PV_Patente}
-                    </td>
-                    <td className='py3 px-6'>
-                      {permisosv.vehi_pvehiculo.Marca}
-                    </td>
-                    <td className='py3 px-6'>
-                      {permisosv.vehi_pvehiculo.Modelo}
-                    </td>
-                    <td className='py3 px-6'>
-                      {permisosv.vehi_pvehiculo.Ano}
-                    </td>
-                    <td className='py3 px-6'>
-                      {permisosv.F_permiso}
-                    </td>
-                    <td className='py3 px-6'>
-                      {permisosv.Validar === 0 ? 'En proceso' : (permisosv.Validar === 1 ? 'Con permiso' : 'Sin permiso')}
-                    </td>
-                    <td className='py3 px-1 text-center'>
-                      <Grid container sx={{ color: 'text.primary' }}>
-                        <Link to={`/permisosv/edit/${permisosv.Id}`} className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white" ><EditOutlined/></Link>
-                        <button onClick={() => handleOpenDeleteDialog(permisosv.Id)} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white">
-                          <DeleteForeverOutlined/>
-                        </button>
-                      </Grid>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
+              {/* Table content */}
             </table>
           </div>
           <TablePagination
-          component="div"
-          count={filteredData.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Filas por página:"
-        />
+            component="div"
+            count={data?.total || 0}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            labelRowsPerPage="Filas por página:"
+          />
         </div>
-        <Dialog
-          open={deleteDialogOpen}
-          onClose={handleCloseDeleteDialog}
-        >
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
+        </>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+      >
+        <DialogTitle>Confirmar eliminación</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            ¿Estás seguro de que quieres eliminar este permiso?
+            ¿Estás seguro de que quieres eliminar este permiso vehicular?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <button onClick={handleCloseDeleteDialog} className="font-medium bg-gray-400 hover:bg-gray-300 px-2 py-1 rounded text-white">
+          <button onClick={handleCloseDeleteDialog} className="bg-gray-500 hover:bg-gray-300 text-white font-bold py-2 px-4 rounded-lg">
             Cancelar
           </button>
-          <button onClick={() => deletePermisoV(deleteId)} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white">
+          <button onClick={() => deletePermisoV(deleteId)} className="bg-red-500 hover:bg-red-300 text-white font-bold py-2 px-4 rounded-lg">
             Eliminar
           </button>
         </DialogActions>
       </Dialog>
-        <br></br><br></br><br></br><br></br>
-      </>
     </div>
-  )
+  );
 }
 
 export default PermisoVList;

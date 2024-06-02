@@ -1,31 +1,44 @@
 import { PrismaClient } from "@prisma/client";
-import { response } from "express";
-import { json } from "stream/consumers";
+import { paginate } from "../helpers/pagination.js";
 
 const prisma = new PrismaClient();
 
-export const getPermisoJoin = async (req, res) => {
+export const getPermiso = async (req, res) => {
+    const { page = 1, limit = 100 } = req.query;
     try {
-        const response = await prisma.permisos.findMany({
-            include:{
-                personal: true,
-            },
-        });
-        res.status(200).json(response);
+        const result = await paginate(prisma.permisos, parseInt(page), parseInt(limit));
+        res.status(200).json(result);
     } catch (error) {
-        res.status(500).json({msg: error.message});
+        res.status(500).json({ msg: error.message });
     }
 }
 
-export const getPermiso = async (req, res) => {
+export const getPermisoJoin = async (req, res) => {
+    const { page = 0, pageSize = 10 } = req.query;  // Default page to 0 if not provided
     try {
-        const response = await prisma.permisos.findMany({
-        });
-        res.status(200).json(response);
+        // Asegurar que page y pageSize sean números enteros positivos
+        const pageNumber = Math.max(parseInt(page), 0);
+        const pageSizeNumber = Math.max(parseInt(pageSize), 1);
+
+        // Calcular el valor correcto de skip
+        const skip = pageNumber * pageSizeNumber;
+
+        const [data, total] = await Promise.all([
+            prisma.permisos.findMany({
+                include: {
+                    personal: true,
+                },
+                skip: skip,
+                take: pageSizeNumber,
+            }),
+            prisma.permisos.count(),
+        ]);
+
+        res.status(200).json({ data, total });
     } catch (error) {
-        res.status(500).json({msg: error.message});
+        res.status(500).json({ msg: error.message });
     }
-}
+};
 
 export const getPermisoById = async (req, res) => {
     try {
