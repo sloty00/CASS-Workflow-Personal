@@ -14,7 +14,7 @@ export const getVacaciones = async (req, res) => {
 }
 
 export const getVacacionesJoin = async (req, res) => {
-    const { page = 1, pageSize = 10 } = req.query;
+    const { page = 1, pageSize = 100 } = req.query;
     try {
         // Asegurar que page y pageSize sean números enteros positivos
         const pageNumber = Math.max(parseInt(page), 1);
