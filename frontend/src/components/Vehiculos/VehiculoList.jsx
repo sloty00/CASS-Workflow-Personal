@@ -17,25 +17,16 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
 const VehiculoList = () => {
-
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState(null);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
+  const [totalItems, setTotalItems] = React.useState(0);
   const { mutate } = useSWRConfig();
-  const fetcher = async () => {
+  
+  const fetcher = async (url) => {
     try {
-      const response = await axios.get("http://localhost:5000/vehiculo");
+      const response = await axios.get(url);
       return response.data;
     } catch (error) {
       console.error("Error fetching data:", error);
@@ -44,7 +35,8 @@ const VehiculoList = () => {
   };
 
   const navigate = useNavigate();
-  const { data } = useSWR("vehiculo", fetcher);
+  const { data, error } = useSWR(`http://localhost:5000/vehiculo?page=${page + 1}&pageSize=${rowsPerPage}`, fetcher);
+
   const [searchTerm, setSearchTerm] = useState("");
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -76,27 +68,43 @@ const VehiculoList = () => {
   const deleteVehiculo = async () => {
     try {
       await axios.delete(`http://localhost:5000/vehiculo/${deleteId}`);
-      mutate("vehiculo");
+      mutate(`http://localhost:5000/vehiculo?page=${page + 1}&pageSize=${rowsPerPage}`);
       handleCloseDeleteDialog();
     } catch (error) {
       console.error("Error deleting vehicle:", error);
     }
   };
 
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  useEffect(() => {
+    if (data) {
+      setTotalItems(data.totalItems);
+    }
+  }, [data]);
+
   if (loading) {
     return ( 
-        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
       );
   }
 
   if (!authUser) {
     return (
-      <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+      <div className='sign-in-container max-w-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
         <Stack sx={{ width: '100%' }} spacing={2}>
           <Alert variant="filled" severity="error">
-          Error 401: No tienes autorización para ver esta página. Vuelve a ingresar o favor contactarte con el: <a href="mailto:jvargas@cass.cl" style={{ color: 'yellow' }}>administrador</a> de esta APP.
+            Error 401: No tienes autorización para ver esta página. Vuelve a ingresar o favor contactarte con el: <a href="mailto:jvargas@cass.cl" style={{ color: 'yellow' }}>administrador</a> de esta APP.
           </Alert>
-        </Stack> <br></br>
+        </Stack>
+        <br></br>
         <Link
           to="/"
           className="bg-green-700 hover:bg-green-400 border border-slate-200 text-white font-bold py-2 px-4 rounded-lg"
@@ -108,14 +116,14 @@ const VehiculoList = () => {
     );
   }
 
-  const filteredData = data.filter(vehiculo =>
+  const filteredData = data ? data.items.filter(vehiculo =>
     vehiculo.Patente.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vehiculo.Marca.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vehiculo.Modelo.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) : [];
 
   return (
-    <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+    <div className='sign-in-container max-w-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
       <h4>
         <center>Maestros.Vehiculos</center>
       </h4>
@@ -189,7 +197,7 @@ const VehiculoList = () => {
         </div>
         <TablePagination
           component="div"
-          count={filteredData.length}
+          count={totalItems}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
@@ -208,15 +216,10 @@ const VehiculoList = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <button onClick={handleCloseDeleteDialog} className="font-medium bg-gray-400 hover:bg-gray-300 px-2 py-1 rounded text-white">
-            Cancelar
-          </button>
-          <button onClick={deleteVehiculo} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white">
-            Eliminar
-          </button>
+          <button onClick={handleCloseDeleteDialog} className="bg-blue-700 hover:bg-blue-400 px-4 py-2 rounded text-white">Cancelar</button>
+          <button onClick={deleteVehiculo} className="bg-red-700 hover:bg-red-400 px-4 py-2 rounded text-white">Eliminar</button>
         </DialogActions>
       </Dialog>
-      <br/><br/><br/><br/>
     </div>
   );
 };

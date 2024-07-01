@@ -1,32 +1,44 @@
 import { PrismaClient } from "@prisma/client";
-import { response } from "express";
-import { json } from "stream/consumers";
+import { paginate } from "../helpers/pagination.js";  // Asegúrate de importar tu helper de paginación
 
 const prisma = new PrismaClient();
 
-export const getChecklistJoin = async (req, res) => {
+export const getChecklist = async (req, res) => {
+    const { page = 1, limit = 100 } = req.query;  // Obtener los parámetros de paginación de la query string
     try {
-        const response = await prisma.chk_vehiculo.findMany({
-            include:{
-                pers_chkvehiculo: true,
-                vehi_chkvehiculo: true,
-            },
-        });
-        res.status(200).json(response);
+        const result = await paginate(prisma.chk_vehiculo, parseInt(page), parseInt(limit));
+        res.status(200).json(result);
     } catch (error) {
-        res.status(500).json({msg: error.message});
+        res.status(500).json({ msg: error.message });
     }
 }
 
-export const getChecklist = async (req, res) => {
+export const getChecklistJoin = async (req, res) => {
+    const { page = 0, pageSize = 100 } = req.query;
     try {
-        const response = await prisma.chk_vehiculo.findMany({
-        });
-        res.status(200).json(response);
+        // Asegurar que page y pageSize sean números enteros positivos
+        const pageNumber = Math.max(parseInt(page), 0);
+        const pageSizeNumber = Math.max(parseInt(pageSize), 1);
+
+        // Calcular el valor correcto de skip
+        const skip = pageNumber * pageSizeNumber;
+
+        const [data, total] = await Promise.all([
+            prisma.chk_vehiculo.findMany({
+                include: {
+                    pers_chkvehiculo: true,
+                    vehi_chkvehiculo: true,
+                },
+                skip: skip,
+                take: pageSizeNumber,
+            }),
+            prisma.chk_vehiculo.count(),
+        ]);
+        res.status(200).json({ data, total });
     } catch (error) {
-        res.status(500).json({msg: error.message});
+        res.status(500).json({ msg: error.message });
     }
-}
+};
 
 export const getChecklistById = async (req, res) => {
     try {

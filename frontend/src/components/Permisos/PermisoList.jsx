@@ -5,9 +5,8 @@ import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
 import { auth } from "../../firebase.js";
 import { onAuthStateChanged } from 'firebase/auth';
-import { TablePagination, Stack, Alert } from '@mui/material';
+import { TablePagination, Stack, Alert, Grid, TextField, Button, IconButton } from '@mui/material';
 import { DeleteForeverOutlined, EditOutlined, AddCircleOutline } from '@mui/icons-material';
-import Grid from '@mui/material/Grid';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -16,14 +15,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 const PermisoList = () => {
   const { mutate } = useSWRConfig();
-  const fetcher = async () => {
-    const response = await axios.get('http://localhost:5000/permisoJoin');
-    return response.data;
-  };
-
-  const redirectPath = "/permisos";
   const navigate = useNavigate();
-  const { data } = useSWR("permiso", fetcher);
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -32,13 +24,20 @@ const PermisoList = () => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
 
+  const fetcher = async (url) => {
+    const response = await axios.get(url, {
+      params: { page, pageSize: rowsPerPage }
+    });
+    return response.data;
+  };
+
+  const redirectPath = "/permisos";
+  const { data } = useSWR(`http://localhost:5000/permisoJoin?page=${page}&pageSize=${rowsPerPage}`, fetcher);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUser(user);
-      setLoading(false);
-      if (user) {
-        navigate("/permisos");
-      }
+      setLoading(false); // Indicamos que la autenticación ha terminado y se puede renderizar
     });
 
     return () => {
@@ -65,71 +64,72 @@ const PermisoList = () => {
     setDeleteDialogOpen(false);
   };
 
+  if (loading) {
+    return (
+      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+    );
+  }
+
   const deletePermiso = async (permisoId) => {
     await axios.delete(`http://localhost:5000/permisos/${permisoId}`);
-    mutate('permisos');
-    handleCloseDeleteDialog();
+    mutate('http://localhost:5000/permisoJoin');
     navigate(redirectPath);
     window.location.reload(); // Refrescar la página después de eliminar
   }
 
-  if (loading) {
-    return ( 
-        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
-      );
-  }
-
   if (!authUser) {
     return (
-      <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+      <div className='sign-in-container max-w-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
         <Stack sx={{ width: '100%' }} spacing={2}>
-          <Alert variant="filled" severity="error">Error 401: No tienes autorizacion para ver esta pagina. Vuelve a ingresar o favor contactarte con el administrador de esta APP jvargas@cass.cl:.</Alert>
-        </Stack> <br></br>
+          <Alert variant="filled" severity="error">Error 401: No tienes autorización para ver esta página. Vuelve a ingresar o favor contactarte con el administrador de esta APP jvargas@cass.cl:.</Alert>
+        </Stack> <br />
         <Link
           to="/"
           className="bg-green-700 hover:bg-green-400 border border-slate-200 text-white font-bold py-2 px-4 rounded-lg"
         >
           Ingresar Cuenta
         </Link>
-        <br/><br/>
+        <br /><br />
       </div>
     );
   }
 
-  const filteredData = data.filter((permiso) =>
+  const filteredData = Array.isArray(data?.data) ? data.data.filter((permiso) =>
     permiso.P_Rut.toLowerCase().includes(searchTerm.toLowerCase()) ||
     permiso.personal.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
     permiso.personal.Apellidos.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) : [];
 
   return (
-    <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
-      <h4><center>Permiso Personal</center></h4><br></br>
+    <div className='sign-in-container max-w-4xl mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+      <>
+      <h4><center>Permiso Personal</center></h4><br />
       <div className="w-full">
-        <div className="row">
-          <div className="col-lg">
-            <input
-              type="text"
-              placeholder="Buscar por Rut..."
+        <Grid container spacing={2} alignItems="center">
+          <Grid item xs={8}>
+            <TextField
+              fullWidth
+              variant="outlined"
+              label="Buscar por Rut..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 mb-3"
             />
-          </div>
-          <div className="col-lg-1">
-            <Grid container sx={{ color: 'text.primary' }}>
-              <Link
-                to="/permisos/add"
-                className="bg-blue-700 hover:bg-blue-400 border border-slate-200 text-white font-bold py-3 px-3 rounded-lg"
-              >
-                <AddCircleOutline/>
-              </Link>
-            </Grid>
-          </div>
-        </div>
-        <div className="relative shadow rounded-lg mt-3">
+          </Grid>
+          <Grid item xs={4} container justifyContent="flex-end">
+            <Button
+              component={Link}
+              to="/permisos/add"
+              variant="contained"
+              color="primary"
+              startIcon={<AddCircleOutline />}
+            >
+              Añadir
+            </Button>
+          </Grid>
+        </Grid>
+        <div className="relative shadow rounded-lg mt-3 overflow-x-auto">
           <table className='w-full text-sm text-left text-gray-500'>
-            <thead className='text-xs text-gray-700 upparcase bg-gray-100'>
+            <thead className='text-xs text-gray-700 uppercase bg-gray-100'>
               <tr>
                 <th className='py-3 px-1 text-center'>No</th>
                 <th className='py-3 px-6'>Rut</th>
@@ -142,9 +142,9 @@ const PermisoList = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredData.map((permiso, index)=>(
+              {filteredData.map((permiso, index) => (
                 <tr className="bg-white border-b" key={permiso.Id}>
-                  <td className='py-3 px-1 text-center'>{index+1}</td>
+                  <td className='py-3 px-1 text-center'>{index + 1}</td>
                   <td className='py3 px-6'>
                     {permiso.P_Rut}
                   </td>
@@ -164,19 +164,24 @@ const PermisoList = () => {
                     {permiso.Descripcion}
                   </td>
                   <td className="py-3 px-1 text-center">
-                    <Grid container sx={{ color: 'text.primary' }}>
-                      <Link
-                        to={`/permisos/edit/${permiso.Id}`}
-                        className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white"
-                      >
-                        <EditOutlined/>
-                      </Link>
-                      <button
-                        onClick={() => handleOpenDeleteDialog(permiso.Id)}
-                        className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white"
-                      >
-                        <DeleteForeverOutlined/>
-                      </button>
+                    <Grid container spacing={1} justifyContent="center">
+                      <Grid item>
+                        <IconButton
+                          component={Link}
+                          to={`/permisos/edit/${permiso.Id}`}
+                          color="primary"
+                        >
+                          <EditOutlined />
+                        </IconButton>
+                      </Grid>
+                      <Grid item>
+                        <IconButton
+                          onClick={() => handleOpenDeleteDialog(permiso.Id)}
+                          color="secondary"
+                        >
+                          <DeleteForeverOutlined />
+                        </IconButton>
+                      </Grid>
                     </Grid>
                   </td>
                 </tr>
@@ -186,7 +191,7 @@ const PermisoList = () => {
         </div>
         <TablePagination
           component="div"
-          count={filteredData.length}
+          count={data?.total || 0}
           page={page}
           onPageChange={handleChangePage}
           rowsPerPage={rowsPerPage}
@@ -194,6 +199,7 @@ const PermisoList = () => {
           labelRowsPerPage="Filas por página:"
         />
       </div>
+      </>
       <Dialog
         open={deleteDialogOpen}
         onClose={handleCloseDeleteDialog}
@@ -205,17 +211,17 @@ const PermisoList = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <button onClick={handleCloseDeleteDialog} className="font-medium bg-gray-400 hover:bg-gray-300 px-2 py-1 rounded text-white">
+          <Button onClick={handleCloseDeleteDialog} color="primary">
             Cancelar
-          </button>
-          <button onClick={() => deletePermiso(deleteId)} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white">
+          </Button>
+          <Button onClick={() => deletePermiso(deleteId)} color="secondary">
             Eliminar
-          </button>
+          </Button>
         </DialogActions>
       </Dialog>
-      <br></br><br></br><br></br><br></br>
+      <br /><br /><br /><br />
     </div>
-  )
+  );
 }
 
 export default PermisoList;

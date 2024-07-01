@@ -16,14 +16,6 @@ import DialogTitle from '@mui/material/DialogTitle';
 
 const PermisoVList = () => {
   const { mutate } = useSWRConfig();
-  const fetcher = async () => {
-    const response = await axios.get('http://localhost:5000/permisojoinv');
-    return response.data;
-  };
-
-  const redirectPath = "/permisosv";
-  const navigate = useNavigate();
-  const { data } = useSWR("vehiculo", fetcher);
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(0);
@@ -31,13 +23,26 @@ const PermisoVList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
+  const [data, setData] = useState([]);
+  const [totalRows, setTotalRows] = useState(0);
+  const navigate = useNavigate();
+
+  const fetchData = async (page, pageSize) => {
+    try {
+      const response = await axios.get(`http://localhost:5000/permisojoinv?page=${page}&pageSize=${pageSize}`);
+      setData(response.data.data);
+      setTotalRows(response.data.total);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUser(user);
-      setLoading(false); // Indicamos que la autenticación ha terminado y se puede renderizar
+      setLoading(false);
       if (user) {
-        navigate("/permisosv"); // Redirigir automáticamente al usuario autenticado a la vista protegida
+        navigate("/permisosv");
       }
     });
 
@@ -45,6 +50,10 @@ const PermisoVList = () => {
       unsubscribe();
     };
   }, [navigate]);
+
+  useEffect(() => {
+    fetchData(page, rowsPerPage);
+  }, [page, rowsPerPage]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -65,17 +74,17 @@ const PermisoVList = () => {
     setDeleteDialogOpen(false);
   };
 
-  if (loading) {
-    return (
-      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
-    );
-  }
-
   const deletePermisoV = async (permisovId) => {
     await axios.delete(`http://localhost:5000/permisosv/${permisovId}`);
     mutate('permisosv');
-    navigate(redirectPath);
-    window.location.reload(); // Refrescar la página después de eliminar
+    navigate("/permisosv");
+    window.location.reload();
+  }
+
+  if (loading) {
+    return (
+      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+    );
   }
 
   if (!authUser) {
@@ -102,7 +111,6 @@ const PermisoVList = () => {
     permisosv.vehi_pvehiculo.Modelo.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Renderizar vista protegida
   return (
     <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
       <>
@@ -110,13 +118,13 @@ const PermisoVList = () => {
         <div className="w-full">
           <div className="row">
             <div className="col-lg">
-            <input
-              type="text"
-              placeholder="Buscar por Rut..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="border border-gray-300 rounded-lg px-3 py-2 mb-3"
-            />
+              <input
+                type="text"
+                placeholder="Buscar por Rut..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="border border-gray-300 rounded-lg px-3 py-2 mb-3"
+              />
             </div>
             <div className="col-lg-1">
               <Grid container sx={{ color: 'text.primary' }}>
@@ -146,9 +154,9 @@ const PermisoVList = () => {
                 </tr>
               </thead>
               <tbody>
-                {filteredData.map((permisosv, index)=>(
+                {filteredData.map((permisosv, index) => (
                   <tr className="bg-white border-b" key={permisosv.Id}>
-                    <td className='py-3 px-1 text-center'>{index+1}</td>
+                    <td className='py-3 px-1 text-center'>{index + 1}</td>
                     <td className='py3 px-6'>
                       {permisosv.pers_pvehiculo.Nombre}
                     </td>
@@ -175,9 +183,9 @@ const PermisoVList = () => {
                     </td>
                     <td className='py3 px-1 text-center'>
                       <Grid container sx={{ color: 'text.primary' }}>
-                        <Link to={`/permisosv/edit/${permisosv.Id}`} className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white" ><EditOutlined/></Link>
+                        <Link to={`/permisosv/edit/${permisosv.Id}`} className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white" ><EditOutlined /></Link>
                         <button onClick={() => handleOpenDeleteDialog(permisosv.Id)} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white">
-                          <DeleteForeverOutlined/>
+                          <DeleteForeverOutlined />
                         </button>
                       </Grid>
                     </td>
@@ -187,38 +195,38 @@ const PermisoVList = () => {
             </table>
           </div>
           <TablePagination
-          component="div"
-          count={filteredData.length}
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Filas por página:"
-        />
+            component="div"
+            count={totalRows}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
         </div>
-        <Dialog
-          open={deleteDialogOpen}
-          onClose={handleCloseDeleteDialog}
-        >
-        <DialogTitle>Confirmar Eliminación</DialogTitle>
+      </>
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Confirmación de Eliminación"}</DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            ¿Estás seguro de que quieres eliminar este permiso?
+          <DialogContentText id="alert-dialog-description">
+            ¿Estás seguro de que deseas eliminar este permiso vehicular?
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <button onClick={handleCloseDeleteDialog} className="font-medium bg-gray-400 hover:bg-gray-300 px-2 py-1 rounded text-white">
+          <button onClick={handleCloseDeleteDialog} className="font-medium bg-gray-700 hover:bg-gray-400 px-2 py-1 rounded text-white">
             Cancelar
           </button>
-          <button onClick={() => deletePermisoV(deleteId)} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white">
+          <button onClick={() => deletePermisoV(deleteId)} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white" autoFocus>
             Eliminar
           </button>
         </DialogActions>
       </Dialog>
-        <br></br><br></br><br></br><br></br>
-      </>
     </div>
-  )
+  );
 }
 
 export default PermisoVList;

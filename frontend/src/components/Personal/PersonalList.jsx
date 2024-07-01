@@ -7,7 +7,6 @@ import Stack from '@mui/material/Stack';
 import TablePagination from '@mui/material/TablePagination'; 
 import { AddCircleOutline, DeleteForeverOutlined, EditOutlined } from '@mui/icons-material';
 import axios from "axios";
-import useSWR, { useSWRConfig } from "swr";
 import { auth } from "../../firebase.js";
 import { onAuthStateChanged } from 'firebase/auth';
 import Dialog from '@mui/material/Dialog';
@@ -21,34 +20,33 @@ const PersonalList = () => {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [deleteId, setDeleteId] = React.useState(null);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const { mutate } = useSWRConfig();
-  const fetcher = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/personal");
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      throw error;
-    }
-  };
-
-  const navigate = useNavigate();
-  const { data } = useSWR("personal", fetcher);
+  const [data, setData] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const fetcher = async () => {
+      try {
+        const response = await axios.get(`http://localhost:5000/personal?page=${page + 1}&pageSize=${rowsPerPage}`);
+        return response.data;
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        throw error;
+      }
+    };
+
+    const fetchData = async () => {
+      try {
+        const response = await fetcher();
+        setData(response.items);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUser(user);
       setLoading(false);
@@ -60,7 +58,18 @@ const PersonalList = () => {
     return () => {
       unsubscribe();
     };
-  }, [navigate]);
+  }, [page, rowsPerPage]);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const navigate = useNavigate();
 
   const handleOpenDeleteDialog = (personalId) => {
     setDeleteId(personalId);
@@ -75,8 +84,8 @@ const PersonalList = () => {
   const deletePersonal = async () => {
     try {
       await axios.delete(`http://localhost:5000/personal/${deleteId}`);
-      mutate("personal");
-      handleCloseDeleteDialog();
+      const newPage = data.length === 1 ? Math.max(0, page - 1) : page;
+      setPage(newPage);
     } catch (error) {
       console.error("Error deleting personal:", error);
     }
