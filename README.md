@@ -7,5 +7,6 @@
 > 5.- En este ejemplo use varias tecnologias prototipos para presentar: Firebase con JWT / Active Directory con JWT.  
 > 6.- Para el front se uso React JS.  
 > 7.- Tanto las rutas como las paginas quedaron bloqueadas bajo regimen JWT con Login desde un AD.  
+Software esta construido por principios educativos/demostrativos, no es un software en produccion que este en funcionamiento en CASS.
 
 Video de Funcionamiento: https://youtu.be/VdscwVx7AJ4
