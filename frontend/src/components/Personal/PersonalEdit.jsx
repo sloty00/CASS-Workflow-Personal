@@ -6,6 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 
 const PersonalEdit = () => {
     const [Rut, setRut] = useState("");
+    const [rutValido, setRutValido] = useState(true);
     const [Nombre, setNombre] = useState("");
     const [Apellidos, setApellidos] = useState("");
     const [Sector, setSector] = useState("");
@@ -14,6 +15,7 @@ const PersonalEdit = () => {
     const [Direccion, setDireccion] = useState("");
     const [Comuna, setComuna] = useState("");
     const [Provincia, setProvincia] = useState("");
+    const [saving, setSaving] = useState(false); 
     const navigate = useNavigate();
     const { Id } = useParams();
 
@@ -33,8 +35,38 @@ const PersonalEdit = () => {
         getPersonalById();
     }, [Id]);
 
+    const validarRut = (rut) => {
+        rut = rut.trim();
+        rut = rut.replace(/\./g, '').replace('-', '').toUpperCase();
+
+        if (!/^[0-9]+[0-9kK]{1}$/.test(rut)) return false;
+
+        let cuerpo = rut.slice(0, -1);
+        let dv = rut.slice(-1);
+        let suma = 0;
+        let multiplo = 2;
+
+        for (let i = cuerpo.length - 1; i >= 0; i--) {
+            suma += parseInt(cuerpo.charAt(i)) * multiplo;
+            if (multiplo < 7) multiplo++;
+            else multiplo = 2;
+        }
+
+        let dvCalculado = 11 - (suma % 11);
+        dvCalculado = (dvCalculado === 11) ? 0 : ((dvCalculado === 10) ? 'K' : dvCalculado);
+
+        return dvCalculado.toString() === dv;
+    };
+
     const PersonalUpdate = async (e) => {
         e.preventDefault();
+        if (!validarRut(Rut)) {
+            setRutValido(false); // Actualizar el estado para mostrar el mensaje de error
+            return; // Detener el proceso de envío del formulario
+        }
+
+        setSaving(true); // Indicar que se está guardando
+
         await axios.patch(`http://localhost:5000/personal/${Id}`, {
             //Nombre: parseInt(Nombre),
             Rut: Rut,
@@ -62,6 +94,8 @@ const PersonalEdit = () => {
                             fullWidth
                             value={Rut}
                             onChange={(e) => setRut(e.target.value)}
+                            error={!rutValido}
+                            helperText={!rutValido && "El Rut ingresado no es válido."}
                         />
                     </Grid>
                     <Grid item xs={12} md={6}>
@@ -143,8 +177,9 @@ const PersonalEdit = () => {
                             color="primary"
                             fullWidth
                             startIcon={<AddIcon />}
+                            disabled={saving} // Deshabilitar el botón mientras se guarda
                         >
-                            Guardar
+                            {saving ? <CircularProgress size={24} color="inherit" /> : "Guardar"}
                         </Button>
                     </Grid>
                 </Grid>

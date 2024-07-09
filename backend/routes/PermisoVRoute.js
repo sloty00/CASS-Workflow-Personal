@@ -1,12 +1,12 @@
 import express from "express";
 import {
-        getPermisoV,
-        getPermisoVJoin, 
-        getPermisoVById, 
-        createPermisoV, 
-        updatePermisoV,
-        deletePermisoV
-        } from "../controllers/PermisoVController.js";
+    getPermisoV,
+    getPermisoVJoin,
+    getPermisoVById,
+    createPermisoV,
+    updatePermisoV,
+    deletePermisoV
+} from "../Controllers/PermisoVController.js";
 
 const router = express.Router();
 

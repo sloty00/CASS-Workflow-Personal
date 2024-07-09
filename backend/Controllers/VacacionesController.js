@@ -1,27 +1,39 @@
 import { PrismaClient } from "@prisma/client";
-import { response } from "express";
-import { json } from "stream/consumers";
+import { paginate } from "../helpers/pagination.js";
 
 const prisma = new PrismaClient();
 
-export const getVacacionesJoin = async (req, res) => {
+export const getVacaciones = async (req, res) => {
+    const { page = 1, limit = 100 } = req.query;
     try {
-        const response = await prisma.vacaciones.findMany({
-            include:{
-                pers_vacaciones: true,
-            },
-        });
-        res.status(200).json(response);
+        const result = await paginate(prisma.vacaciones, parseInt(page), parseInt(limit));
+        res.status(200).json(result);
     } catch (error) {
         res.status(500).json({msg: error.message});
     }
 }
 
-export const getVacaciones = async (req, res) => {
+export const getVacacionesJoin = async (req, res) => {
+    const { page = 1, pageSize = 100 } = req.query;
     try {
-        const response = await prisma.vacaciones.findMany({
-        });
-        res.status(200).json(response);
+        // Asegurar que page y pageSize sean números enteros positivos
+        const pageNumber = Math.max(parseInt(page), 1);
+        const pageSizeNumber = Math.max(parseInt(pageSize), 1);
+
+        // Calcular el valor correcto de skip
+        const skip = (pageNumber - 1) * pageSizeNumber;
+
+        const [data, total] = await Promise.all([
+            prisma.vacaciones.findMany({
+                include:{
+                    pers_vacaciones: true,
+                },
+                skip,
+                take: pageSizeNumber,
+            }),
+            prisma.vacaciones.count(),
+        ]);
+        res.status(200).json({ data, total });
     } catch (error) {
         res.status(500).json({msg: error.message});
     }

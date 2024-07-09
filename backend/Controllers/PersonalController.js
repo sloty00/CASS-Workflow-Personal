@@ -1,17 +1,19 @@
 import { PrismaClient } from "@prisma/client";
-import { response } from "express";
-import { json } from "stream/consumers";
+import { paginate } from "../helpers/pagination.js";
 
 const prisma = new PrismaClient();
 
 export const getPersonal = async (req, res) => {
+    const { page = 1, pageSize = 3 } = req.query;
     try {
-        const response = await prisma.personal.findMany();
-        res.status(200).json(response);
+        console.log(`Fetching page ${page} with page size ${pageSize}`);
+        const result = await paginate(prisma.personal, parseInt(page), parseInt(pageSize));
+        console.log(`Retrieved ${result.items.length} items`);
+        res.status(200).json(result);
     } catch (error) {
         res.status(500).json({msg: error.message});
     }
-}
+};
 
 export const getPersonalById = async (req, res) => {
     try {

@@ -7,27 +7,27 @@ const BodyHome = () => {
   const images = [
     {
       src: 'images/VINTAGE1.jpg',
-      caption: 'BRINDANDO SERVICIOS A TODO CHILE DESDE 1994'
+      caption: 'BRINDANDO SERVICIOS DESDE 2018'
     },
     {
       src: 'images/VINTAGE2.jpg',
-      caption: 'BRINDANDO SERVICIOS A TODO CHILE DESDE 1994'
+      caption: 'BRINDANDO SERVICIOS DESDE 2018'
     },
     {
       src: 'images/VINTAGE3.jpg',
-      caption: 'BRINDANDO SERVICIOS A TODO CHILE DESDE 1994'
+      caption: 'BRINDANDO SERVICIOS DESDE 2018'
     },
     {
       src: 'images/VINTAGE4.jpg',
-      caption: 'BRINDANDO SERVICIOS A TODO CHILE DESDE 1994'
+      caption: 'BRINDANDO SERVICIOS DESDE 2018'
     },
     {
       src: 'images/VINTAGE5.jpg',
-      caption: 'BRINDANDO SERVICIOS A TODO CHILE DESDE 1994'
+      caption: 'BRINDANDO SERVICIOS DESDE 2018'
     },
     {
       src: 'images/VINTAGE6.jpg',
-      caption: 'BRINDANDO SERVICIOS A TODO CHILE DESDE 1994'
+      caption: 'BRINDANDO SERVICIOS DESDE 2018'
     }
     // Agrega más objetos para cada imagen con su respectivo texto
   ];

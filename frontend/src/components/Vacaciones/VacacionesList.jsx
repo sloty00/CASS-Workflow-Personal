@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
 import ProgressBar from 'react-bootstrap/ProgressBar';
+import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
 import { auth } from "../../firebase.js";
 import { onAuthStateChanged } from 'firebase/auth';
@@ -13,31 +13,33 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Footer from '../../components/Footer.jsx';
 
 const VacacionesList = () => {
   const { mutate } = useSWRConfig();
-  const fetcher = async () => {
-    const response = await axios.get('http://localhost:5000/vacacionesJoin');
-    return response.data;
-  };
-
   const navigate = useNavigate();
-  const { data } = useSWR('vacaciones', fetcher);
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState(null);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Número de filas por página
+
+  const fetcher = async (url) => {
+    const response = await axios.get(url, {
+      params: { page, pageSize: rowsPerPage }
+    });
+    return response.data;
+  };
+
+  const redirectPath = "/vacacionesJoin";
+  const { data, error } = useSWR(`http://localhost:5000/vacacionesJoin?page=${page}&pageSize=${rowsPerPage}`, fetcher);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setAuthUser(user);
       setLoading(false);
-      if (user) {
-        navigate("/vacaciones");
-      }
     });
 
     return () => {
@@ -45,8 +47,17 @@ const VacacionesList = () => {
     };
   }, [navigate]);
 
-  const handleOpenDeleteDialog = (permisoId) => {
-    setDeleteId(permisoId);
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
+
+  const handleOpenDeleteDialog = (vacacionesId) => {
+    setDeleteId(vacacionesId);
     setDeleteDialogOpen(true);
   };
 
@@ -57,10 +68,15 @@ const VacacionesList = () => {
 
   const deleteVacaciones = async (vacacionesId) => {
     await axios.delete(`http://localhost:5000/vacaciones/${vacacionesId}`);
-    mutate('vacaciones');
-    handleCloseDeleteDialog();
-    navigate('/vacaciones');
-    window.location.reload(); // Refrescar la página después de eliminar
+    mutate('http://localhost:5000/vacacionesJoin');
+    navigate(redirectPath);
+    window.location.reload();
+  }
+
+  if (error) {
+    return (
+      <div>Error: {error.message}</div>
+    );
   }
 
   if (loading) {
@@ -86,24 +102,17 @@ const VacacionesList = () => {
     );
   }
 
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-  const filteredData = data.filter((vacaciones) =>
+  const filteredData = data?.data.filter((vacaciones) =>
     vacaciones.pers_vacaciones.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
     vacaciones.pers_vacaciones.Apellidos.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) || [];
 
   return (
+    <div>
     <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
       <h4><center>Vacaciones Personal</center></h4><br></br>
       <div className="w-full">
+      <ProgressBar percent={50} />
         <div className="row">
           <div className="col-lg">
             <input
@@ -115,13 +124,12 @@ const VacacionesList = () => {
             />
           </div>
           <div className="col-lg-1">
-          <Grid container sx={{ color: 'text.primary' }}>
-          <Link to ="/vacaciones/add" 
-          className="bg-blue-700 hover:bg-blue-400 border border-slate-200 text-white font-bold py-3 px-3 rounded-lg">
-            <AddCircleOutline />
-          </Link>
-          </Grid>
-        </div>
+            <Grid container sx={{ color: 'text.primary' }}>
+              <Link to="/vacaciones/add" className="bg-blue-700 hover:bg-blue-400 border border-slate-200 text-white font-bold py-3 px-3 rounded-lg">
+                <AddCircleOutline />
+              </Link>
+            </Grid>
+          </div>
         </div>
         <div className="relative shadow rounded-lg mt-3">
           <table className='w-full text-sm text-left text-gray-500'>
@@ -148,56 +156,58 @@ const VacacionesList = () => {
                     <td className='py-3 px-6'>{vacaciones.Fecha_Salida}</td>
                     <td className='py-3 px-6'>{vacaciones.Dias_vacaciones}</td>
                     <td className="py-3 px-1 text-center">
-                    <Grid container sx={{ color: 'text.primary' }}>
-                      <Link to={`/vacaciones/edit/${vacaciones.Id}`} 
-                            className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white">
-                        <EditOutlined />
-                      </Link>
-                      <button
-                        onClick={() => handleOpenDeleteDialog(vacaciones.Id)}
-                        className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white"
-                      >
-                        <DeleteForeverOutlined/>
-                      </button>
-                    </Grid>
-                  </td>
-                  </tr>
-                ))}
-            </tbody>
-          </table>
-        </div>
-        <TablePagination
-          component="div"
-          count={filteredData.length} // Cantidad total de filas
-          page={page}
-          onPageChange={handleChangePage}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Filas por página:"
-        />
-      </div>
-      <Dialog
-        open={deleteDialogOpen}
-        onClose={handleCloseDeleteDialog}
-      >
-      <DialogTitle>Confirmar Eliminación</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          ¿Estás seguro de que quieres eliminar estas vacaciones?
-        </DialogContentText>
-      </DialogContent>
-      <DialogActions>
-    <button onClick={handleCloseDeleteDialog} className="font-medium bg-gray-400 hover:bg-gray-300 px-2 py-1 rounded text-white">
-      Cancelar
+  <Grid container sx={{ color: 'text.primary' }}>
+    <Link to={`/vacaciones/edit/${vacaciones.Id}`} className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white">
+      <EditOutlined />
+    </Link>
+    <button
+      onClick={() => handleOpenDeleteDialog(vacaciones.Id)}
+      className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white"
+    >
+      <DeleteForeverOutlined/>
     </button>
-    <button onClick={() => deleteVacaciones(deleteId)} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white">
-      Eliminar
-    </button>
-  </DialogActions>
+  </Grid>
+</td>
+</tr>
+))}
+</tbody>
+</table>
+</div>
+<TablePagination
+component="div"
+count={filteredData.length} // Cantidad total de filas
+page={page}
+onPageChange={handleChangePage}
+rowsPerPage={rowsPerPage}
+onRowsPerPageChange={handleChangeRowsPerPage}
+labelRowsPerPage="Filas por página:"
+/>
+</div>
+<Dialog
+open={deleteDialogOpen}
+onClose={handleCloseDeleteDialog}
+>
+<DialogTitle>Confirmar Eliminación</DialogTitle>
+<DialogContent>
+<DialogContentText>
+¿Estás seguro de que quieres eliminar estas vacaciones?
+</DialogContentText>
+</DialogContent>
+<DialogActions>
+<button onClick={handleCloseDeleteDialog} className="font-medium bg-gray-400 hover:bg-gray-300 px-2 py-1 rounded text-white">
+Cancelar
+</button>
+<button onClick={() => deleteVacaciones(deleteId)} className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white">
+Eliminar
+</button>
+</DialogActions>
 </Dialog>
-      <br></br><br></br><br></br><br></br>
-    </div>
-  )
+<br></br><br></br><br></br><br></br>
+</div>
+<Footer />
+</div>
+
+)
 }
 
 export default VacacionesList;

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { auth } from "../../firebase";
-import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth, provider } from "../../firebase";
+import { signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { Grid, TextField, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from '@mui/material';
 
 const SignIn = () => {
@@ -23,7 +23,20 @@ const SignIn = () => {
             console.log(error);
             setOpenCredentialsDialog(true); // Abrir el diálogo de credenciales incorrectas en caso de error
         })
-    }; 
+    };
+
+    const signinWithGoogle = () => {
+        signInWithPopup(auth, provider)
+        .then((result) => {
+            const user = result.user;
+            console.log(user);
+            window.location.href = "/index";
+        })
+        .catch((error) => {
+            console.log(error);
+            setOpenCredentialsDialog(true); // Abrir el diálogo de credenciales incorrectas en caso de error
+        });
+    };
 
     const handleCloseCredentialsDialog = () => {
         setOpenCredentialsDialog(false); // Cerrar el diálogo de credenciales incorrectas
@@ -69,6 +82,16 @@ const SignIn = () => {
                         onClick={signin}
                     >
                         Ingresar
+                    </Button>
+                </Grid>
+                <Grid item xs={12}>
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        fullWidth
+                        onClick={signinWithGoogle}
+                    >
+                        Ingresar con Google
                     </Button>
                 </Grid>
             </Grid>
