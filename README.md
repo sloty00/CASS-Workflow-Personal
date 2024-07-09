@@ -35,4 +35,4 @@ El software está construido principalmente con principios educativos y demostra
 
 Este software actúa como un "conejillo de indias", siendo utilizado para probar y demostrar diversas tecnologías y principios de seguridad para observar que tan viables son. A continuación, se presenta un video demostrativo del funcionamiento del software Gestion Basica:
 
-[Video de Funcionamiento](https://youtu.be/VdscwVx7AJ4)
+[Video de Funcionamiento](https://youtu.be/RqV9BkkoMdg)
