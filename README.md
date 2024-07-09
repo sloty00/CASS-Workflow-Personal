@@ -1,7 +1,7 @@
 # Flujo de Trabajo de la Empresa Cass
 
 [Video de Funcionamiento](https://youtu.be/RqV9BkkoMdg)
-Nota Preliminar los cambios se siguen haciendo en ek Branch: [Stage-2](https://github.com/sloty00/CASS-Workflow-Personal/tree/stage-2).
+Nota Preliminar los cambios se siguen haciendo en el Branch: [Stage-2](https://github.com/sloty00/CASS-Workflow-Personal/tree/stage-2).
 
 ## Tecnologías Utilizadas
 
