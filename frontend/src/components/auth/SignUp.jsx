@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { auth } from "../../firebase";
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, TextField, Button } from '@mui/material';
+import Footer from '../Footer';
 
 const SignUp = () => {
     const [email, setEmail] = useState("");
@@ -17,11 +18,12 @@ const SignUp = () => {
         }
         createUserWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                console.log(userCredential)
+                console.log(userCredential);
+                window.location.href = "/index"; // Redireccionar al usuario después de crear la cuenta
             }).catch((error) => {
                 console.log(error);
                 setOpenCredentialsDialog(true); // Abrir el diálogo de credenciales incorrectas en caso de error
-            })
+            });
     };
 
     const handleCloseCredentialsDialog = () => {
@@ -33,11 +35,12 @@ const SignUp = () => {
     };
 
     return (
-        <div className='sign-in-container, max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+        <div>
+        <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
             <div className='titleContainer' style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '-webkit-fill-available', }}>
                 <h1>Crear Cuenta</h1>
             </div>
-            <br></br>
+            <br />
             <div className='inputContainer'>
                 <form onSubmit={signup}>
                     <Grid container spacing={2}>
@@ -48,7 +51,7 @@ const SignUp = () => {
                                 fullWidth
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                
+                                required
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -59,7 +62,7 @@ const SignUp = () => {
                                 type="password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                
+                                required
                             />
                         </Grid>
                         <Grid item xs={12}>
@@ -111,6 +114,8 @@ const SignUp = () => {
                     </Button>
                 </DialogActions>
             </Dialog>
+        </div>
+        <Footer ></Footer>
         </div>
     );
 };

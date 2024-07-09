@@ -7,6 +7,7 @@ import Stack from '@mui/material/Stack';
 import TablePagination from '@mui/material/TablePagination'; 
 import { AddCircleOutline, DeleteForeverOutlined, EditOutlined } from '@mui/icons-material';
 import axios from "axios";
+import { useSWRConfig } from "swr";
 import { auth } from "../../firebase.js";
 import { onAuthStateChanged } from 'firebase/auth';
 import Dialog from '@mui/material/Dialog';
@@ -14,8 +15,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Footer from "../Footer.jsx";
 
 const PersonalList = () => {
+  const navigate = useNavigate();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
@@ -24,6 +27,9 @@ const PersonalList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [authUser, setAuthUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { mutate } = useSWRConfig();
+  
+  const redirectPath = "/personal";
 
   useEffect(() => {
     const fetcher = async () => {
@@ -58,7 +64,7 @@ const PersonalList = () => {
     return () => {
       unsubscribe();
     };
-  }, [page, rowsPerPage]);
+  }, [page, rowsPerPage, navigate]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -68,8 +74,6 @@ const PersonalList = () => {
     setRowsPerPage(parseInt(event.target.value, 10));
     setPage(0);
   };
-
-  const navigate = useNavigate();
 
   const handleOpenDeleteDialog = (personalId) => {
     setDeleteId(personalId);
@@ -84,8 +88,9 @@ const PersonalList = () => {
   const deletePersonal = async () => {
     try {
       await axios.delete(`http://localhost:5000/personal/${deleteId}`);
-      const newPage = data.length === 1 ? Math.max(0, page - 1) : page;
-      setPage(newPage);
+      mutate(`http://localhost:5000/personal?page=${page + 1}&pageSize=${rowsPerPage}`);
+      handleCloseDeleteDialog();
+      navigate(redirectPath);
     } catch (error) {
       console.error("Error deleting personal:", error);
     }
@@ -120,6 +125,7 @@ const PersonalList = () => {
   );
 
   return (
+    <div>
     <div className='sign-in-container'>
       <h4>
         <center>Maestros.Personal</center>
@@ -228,6 +234,8 @@ const PersonalList = () => {
         </DialogActions>
       </Dialog>
       <br/><br/><br/><br/>
+    </div>
+    <Footer />
     </div>
   );
 };

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import axios from "axios";
-import useSWR, { useSWRConfig } from "swr";
+import { useSWRConfig } from "swr";
 import { auth } from "../../firebase.js";
 import { onAuthStateChanged } from 'firebase/auth';
 import { TablePagination, Stack, Alert } from '@mui/material';
@@ -13,6 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Footer from "../Footer.jsx";
 
 const PermisoVList = () => {
   const { mutate } = useSWRConfig();
@@ -36,6 +37,8 @@ const PermisoVList = () => {
       console.error("Error fetching data:", error);
     }
   };
+
+  const redirectPath = "/permisosv";
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -77,19 +80,19 @@ const PermisoVList = () => {
   const deletePermisoV = async (permisovId) => {
     await axios.delete(`http://localhost:5000/permisosv/${permisovId}`);
     mutate('permisosv');
-    navigate("/permisosv");
+    navigate(redirectPath);
     window.location.reload();
   }
 
   if (loading) {
-    return (
-      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
-    );
+    return ( 
+        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+      );
   }
 
   if (!authUser) {
     return (
-      <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+      <div className='sign-in-container'>
         <Stack sx={{ width: '100%' }} spacing={2}>
           <Alert variant="filled" severity="error">Error 401: No tienes autorizacion para ver esta pagina. Vuelve a ingresar o favor contactarte con el administrador de esta APP jvargas@cass.cl:.</Alert>
         </Stack> <br></br>
@@ -112,6 +115,7 @@ const PermisoVList = () => {
   );
 
   return (
+    <div>
     <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
       <>
         <h4><center>Permiso Vehiculos</center></h4><br></br>
@@ -225,6 +229,8 @@ const PermisoVList = () => {
           </button>
         </DialogActions>
       </Dialog>
+    </div>
+    <Footer />
     </div>
   );
 }

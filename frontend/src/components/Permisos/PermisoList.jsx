@@ -5,13 +5,14 @@ import axios from "axios";
 import useSWR, { useSWRConfig } from "swr";
 import { auth } from "../../firebase.js";
 import { onAuthStateChanged } from 'firebase/auth';
-import { TablePagination, Stack, Alert, Grid, TextField, Button, IconButton } from '@mui/material';
+import { TablePagination, Stack, Alert, Grid, TextField, Button } from '@mui/material';
 import { DeleteForeverOutlined, EditOutlined, AddCircleOutline } from '@mui/icons-material';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Footer from "../Footer.jsx";
 
 const PermisoList = () => {
   const { mutate } = useSWRConfig();
@@ -64,12 +65,6 @@ const PermisoList = () => {
     setDeleteDialogOpen(false);
   };
 
-  if (loading) {
-    return (
-      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
-    );
-  }
-
   const deletePermiso = async (permisoId) => {
     await axios.delete(`http://localhost:5000/permisos/${permisoId}`);
     mutate('http://localhost:5000/permisoJoin');
@@ -77,9 +72,15 @@ const PermisoList = () => {
     window.location.reload(); // Refrescar la página después de eliminar
   }
 
+  if (loading) {
+    return ( 
+        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+      );
+  }
+
   if (!authUser) {
     return (
-      <div className='sign-in-container max-w-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+      <div className='sign-in-container'>
         <Stack sx={{ width: '100%' }} spacing={2}>
           <Alert variant="filled" severity="error">Error 401: No tienes autorización para ver esta página. Vuelve a ingresar o favor contactarte con el administrador de esta APP jvargas@cass.cl:.</Alert>
         </Stack> <br />
@@ -101,6 +102,7 @@ const PermisoList = () => {
   ) : [];
 
   return (
+    <div>
     <div className='sign-in-container max-w-4xl mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
       <>
       <h4><center>Permiso Personal</center></h4><br />
@@ -145,43 +147,26 @@ const PermisoList = () => {
               {filteredData.map((permiso, index) => (
                 <tr className="bg-white border-b" key={permiso.Id}>
                   <td className='py-3 px-1 text-center'>{index + 1}</td>
-                  <td className='py3 px-6'>
-                    {permiso.P_Rut}
-                  </td>
-                  <td className='py3 px-6'>
-                    {permiso.personal.Nombre}
-                  </td>
-                  <td className='py3 px-6'>
-                    {permiso.personal.Apellidos}
-                  </td>
-                  <td className='py3 px-6'>
-                    {permiso.F_permiso}
-                  </td>
-                  <td className='py3 px-6'>
-                    {permiso.Dias}
-                  </td>
-                  <td className='py3 px-6'>
-                    {permiso.Descripcion}
-                  </td>
+                  <td className='py3 px-6'> {permiso.P_Rut} </td>
+                  <td className='py3 px-6'>{permiso.personal.Nombre} </td>
+                  <td className='py3 px-6'>{permiso.personal.Apellidos} </td>
+                  <td className='py3 px-6'>{permiso.F_permiso} </td>
+                  <td className='py3 px-6'> {permiso.Dias} </td>
+                  <td className='py3 px-6'> {permiso.Descripcion} </td>
                   <td className="py-3 px-1 text-center">
-                    <Grid container spacing={1} justifyContent="center">
-                      <Grid item>
-                        <IconButton
-                          component={Link}
+                    <Grid container sx={{ color: 'text.primary' }}>
+                      <Link
                           to={`/permisos/edit/${permiso.Id}`}
-                          color="primary"
+                          className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white"
                         >
                           <EditOutlined />
-                        </IconButton>
-                      </Grid>
-                      <Grid item>
-                        <IconButton
+                        </Link>
+                        <button
                           onClick={() => handleOpenDeleteDialog(permiso.Id)}
-                          color="secondary"
+                          className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white"
                         >
-                          <DeleteForeverOutlined />
-                        </IconButton>
-                      </Grid>
+                          <DeleteForeverOutlined/>
+                        </button>
                     </Grid>
                   </td>
                 </tr>
@@ -220,6 +205,8 @@ const PermisoList = () => {
         </DialogActions>
       </Dialog>
       <br /><br /><br /><br />
+    </div>
+    <Footer />
     </div>
   );
 }

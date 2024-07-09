@@ -4,7 +4,6 @@ import { auth } from "./firebase.js";
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import './style.css';
 import PersonalList from './components/Personal/PersonalList';
-import Footer from './components/Footer.jsx';
 import MenuBar from './components/MenuBar.jsx';
 import PersonalAdd from './components/Personal/PersonalAdd';
 import PersonalEdit from './components/Personal/PersonalEdit';
@@ -74,7 +73,7 @@ function App() {
         ) : (
           <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
           <div className="centered-image">
-            <img src="https://www.cass.cl/wp-content/uploads/2023/09/LOGO-ORIGINAL-3.png" width='15%' alt="CASS"/>
+            <img src="./images/Logo Varto.jpg" width='15%' alt="CASS"/>
           </div>
           </div>
         )}
@@ -104,7 +103,6 @@ function App() {
             <Route path="/Login" element={<Login/>}/>
           </Routes>
         </BrowserRouter>
-        <Footer />
     </div>
     
   );

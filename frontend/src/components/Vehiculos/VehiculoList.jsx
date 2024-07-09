@@ -15,6 +15,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Footer from "../Footer.jsx";
 
 const VehiculoList = () => {
   const [page, setPage] = React.useState(0);
@@ -90,9 +91,15 @@ const VehiculoList = () => {
     }
   }, [data]);
 
+  if (error) {
+    return (
+      <div>Error: {error.message}</div>
+    );
+  }
+
   if (loading) {
     return ( 
-        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
       );
   }
 
@@ -123,7 +130,8 @@ const VehiculoList = () => {
   ) : [];
 
   return (
-    <div className='sign-in-container max-w-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+    <div>
+    <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
       <h4>
         <center>Maestros.Vehiculos</center>
       </h4>
@@ -220,6 +228,8 @@ const VehiculoList = () => {
           <button onClick={deleteVehiculo} className="bg-red-700 hover:bg-red-400 px-4 py-2 rounded text-white">Eliminar</button>
         </DialogActions>
       </Dialog>
+    </div>
+    <Footer />
     </div>
   );
 };

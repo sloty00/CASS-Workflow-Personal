@@ -78,9 +78,9 @@ const MenuBar = () => {
         <Navbar expand="lg" variant="light" className="center">
             <Navbar.Brand href="/" className="ms-5">
                 <img
-                    src="https://www.cass.cl/wp-content/uploads/2023/09/LOGO-ORIGINAL-3.png"
+                    src="./images/Logo Varto.jpg"
                     width="18%"
-                    alt="CASS"
+                    alt="Varto"
                 />
             </Navbar.Brand>
             <Navbar.Toggle aria-controls="basic-navbar-nav" />

@@ -13,6 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Footer from '../../components/Footer.jsx';
 
 const VacacionesList = () => {
   const { mutate } = useSWRConfig();
@@ -72,16 +73,16 @@ const VacacionesList = () => {
     window.location.reload();
   }
 
-  if (loading) {
-    return (
-      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
-    );
-  }
-
   if (error) {
     return (
       <div>Error: {error.message}</div>
     );
+  }
+
+  if (loading) {
+    return ( 
+        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+      );
   }
 
   if (!authUser) {
@@ -107,9 +108,11 @@ const VacacionesList = () => {
   ) || [];
 
   return (
+    <div>
     <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
       <h4><center>Vacaciones Personal</center></h4><br></br>
       <div className="w-full">
+      <ProgressBar percent={50} />
         <div className="row">
           <div className="col-lg">
             <input
@@ -148,11 +151,11 @@ const VacacionesList = () => {
                   <tr className="bg-white border-b" key={vacaciones.Id}>
                     <td className='py-3 px-1 text-center'>{index + 1}</td>
                     <td className='py-3 px-6'>{vacaciones.V_Rut}</td>
-<td className='py-3 px-6'>{vacaciones.pers_vacaciones.Nombre}</td>
-<td className='py-3 px-6'>{vacaciones.pers_vacaciones.Apellidos}</td>
-<td className='py-3 px-6'>{vacaciones.Fecha_Salida}</td>
-<td className='py-3 px-6'>{vacaciones.Dias_vacaciones}</td>
-<td className="py-3 px-1 text-center">
+                    <td className='py-3 px-6'>{vacaciones.pers_vacaciones.Nombre}</td>
+                    <td className='py-3 px-6'>{vacaciones.pers_vacaciones.Apellidos}</td>
+                    <td className='py-3 px-6'>{vacaciones.Fecha_Salida}</td>
+                    <td className='py-3 px-6'>{vacaciones.Dias_vacaciones}</td>
+                    <td className="py-3 px-1 text-center">
   <Grid container sx={{ color: 'text.primary' }}>
     <Link to={`/vacaciones/edit/${vacaciones.Id}`} className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white">
       <EditOutlined />
@@ -201,6 +204,9 @@ Eliminar
 </Dialog>
 <br></br><br></br><br></br><br></br>
 </div>
+<Footer />
+</div>
+
 )
 }
 

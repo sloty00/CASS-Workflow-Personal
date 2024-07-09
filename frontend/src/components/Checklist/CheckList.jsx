@@ -13,6 +13,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Footer from "../Footer.jsx";
 
 const CheckList = () => {
   const { mutate } = useSWRConfig();
@@ -65,17 +66,17 @@ const CheckList = () => {
     setDeleteDialogOpen(false);
   };
 
-  if (loading) {
-    return (
-      <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolute', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
-    );
-  }
-
   const deleteChecklist = async (checklistId) => {
     await axios.delete(`http://localhost:5000/checklist/${checklistId}`);
     mutate('http://localhost:5000/checklistjoin');
     navigate(redirectPath);
     window.location.reload(); // Refrescar la página después de eliminar
+  }
+
+  if (loading) {
+    return ( 
+        <ProgressBar now={100} animated label="Cargando..." style={{ position: 'absolut', top: '50%', left: '0', right: '0', transform: 'translateY(-50%)' }} />
+      );
   }
 
   if (!authUser) {
@@ -104,6 +105,7 @@ const CheckList = () => {
   );
 
   return (
+    <div>
     <div className='sign-in-container max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
       <>
         <h4><center>Checklist Vehículos</center></h4><br />
@@ -149,43 +151,25 @@ const CheckList = () => {
                 {filteredData.map((checklist, index) => (
                   <tr className="bg-white border-b" key={checklist.Id}>
                     <td className='py-3 px-1 text-center'>{index + 1 + page * rowsPerPage}</td>
-                    <td className='py3 px-6'>
-                      {checklist.Chk_Rut}
-                    </td>
-                    <td className='py3 px-6'>
-                      {checklist.pers_chkvehiculo.Nombre}
-                    </td>
-                    <td className='py3 px-6'>
-                      {checklist.pers_chkvehiculo.Apellidos}
-                    </td>
-                    <td className='py3 px-6'>
-                      {checklist.Chk_Patente}
-                    </td>
-                    <td className='py3 px-6'>
-                      {checklist.vehi_chkvehiculo.Marca}
-                    </td>
-                    <td className='py3 px-6'>
-                      {checklist.vehi_chkvehiculo.Modelo}
-                    </td>
-                    <td className='py3 px-6'>
-                      {checklist.Km_salida}
-                    </td>
-                    <td className='py3 px-6'>
-                      {checklist.Km_llegada}
-                    </td>
-                    <td className='py3 px-1 text-center'>
+                    <td className='py3 px-6'> {checklist.Chk_Rut} </td>
+                    <td className='py3 px-6'> {checklist.pers_chkvehiculo.Nombre} </td>
+                    <td className='py3 px-6'> {checklist.pers_chkvehiculo.Apellidos} </td>
+                    <td className='py3 px-6'> {checklist.Chk_Patente} </td>
+                    <td className='py3 px-6'> {checklist.vehi_chkvehiculo.Marca} </td>
+                    <td className='py3 px-6'> {checklist.vehi_chkvehiculo.Modelo} </td>
+                    <td className='py3 px-6'> {checklist.Km_salida} </td>
+                    <td className='py3 px-6'> {checklist.Km_llegada} </td>
+                    <td className="py-3 px-1 text-center">
                       <Grid container sx={{ color: 'text.primary' }}>
                         <Link
                           to={`/checklist/edit/${checklist.Id}`}
-                          className="bg-green-700 hover:bg-green-400 border border-slate-200 text-white font-bold py-2 px-3 rounded-lg"
+                          className="font-medium bg-blue-700 hover:bg-blue-400 px-2 py-2 rounded text-white"
                         >
                           <EditOutlined />
                         </Link>
-                      </Grid>
-                      <Grid container sx={{ color: 'text.primary' }}>
                         <button
                           onClick={() => handleOpenDeleteDialog(checklist.Id)}
-                          className="bg-red-700 hover:bg-red-400 border border-slate-200 text-white font-bold py-2 px-3 rounded-lg"
+                          className="font-medium bg-red-700 hover:bg-red-400 px-2 py-1 rounded text-white"
                         >
                           <DeleteForeverOutlined />
                         </button>
@@ -224,6 +208,8 @@ const CheckList = () => {
           </button>
         </DialogActions>
       </Dialog>
+    </div>
+    <Footer />
     </div>
   );
 };
