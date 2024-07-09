@@ -1,5 +1,8 @@
 # Flujo de Trabajo de la Empresa Cass
 
+[Video de Funcionamiento](https://youtu.be/RqV9BkkoMdg)
+Nota Preliminar los cambios se siguen haciendo en ek Branch: [Stage-2](https://github.com/sloty00/CASS-Workflow-Personal/edit/b/README.md).
+
 ## Tecnologías Utilizadas
 
 1. **MySQL**: Utilizado como la base de datos principal. ![MySQL](https://img.shields.io/badge/MySQL-4479A1?logo=mysql&logoColor=white)
@@ -34,5 +37,3 @@ El software está construido principalmente con principios educativos y demostra
    - Uso de Firebase + JWT.
 
 Este software actúa como un "conejillo de indias", siendo utilizado para probar y demostrar diversas tecnologías y principios de seguridad para observar que tan viables son. A continuación, se presenta un video demostrativo del funcionamiento del software Gestion Basica:
-
-[Video de Funcionamiento](https://youtu.be/RqV9BkkoMdg)
