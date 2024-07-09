@@ -19,7 +19,7 @@
 7. **Rutas y Páginas Protegidas**: Se bloquearon bajo régimen JWT con login desde un Active Directory. ![Active Directory](https://img.shields.io/badge/Active%20Directory-0052CC?logo=active-directory&logoColor=white) ![JWT](https://img.shields.io/badge/JWT-000000?logo=json-web-tokens)
 
 
-El software está construido principalmente con principios educativos y demostrativos para actualizar conocimientos y no es un software en producción que esté en funcionamiento en CASS. Este software pasó a ser propiedad de Varto INC, siguiendo principios de calidad, buenas prácticas y calidad en programación y software.
+El software está construido principalmente con principios educativos y demostrativos para actualizar conocimientos y no es un software en producción que esté en funcionamiento en CASS. Este software pasó a ser propiedad de Varto INC, siguiendo principios de calidad, buenas prácticas.
 
 ## Configuraciones y Migraciones
 
