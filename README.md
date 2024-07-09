@@ -7,6 +7,7 @@
 > 5.- En este ejemplo use varias tecnologias prototipos para presentar: Firebase con JWT / Active Directory con JWT.  
 > 6.- Para el front se uso React JS.  
 > 7.- Tanto las rutas como las paginas quedaron bloqueadas bajo regimen JWT con Login desde un AD.  
-Software esta construido por principios educativos/demostrativos, no es un software en produccion que este en funcionamiento en CASS.
+Software esta construido primeramente por principios educativos/demostrativos para actualizar conocimiento, no es un software en produccion que este en funcionamiento en CASS.
+Software paso a ser propiedad y principio de Calidad, Buenas practicas y calidad en programacion como en software para Varto INC.
 
 Video de Funcionamiento: https://youtu.be/VdscwVx7AJ4
