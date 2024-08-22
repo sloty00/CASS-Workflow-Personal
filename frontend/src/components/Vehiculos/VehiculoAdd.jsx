@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { auth } from "../../firebase.js";
+import { createVehiculo } from "../../api/vehiculoApi";
+import { auth } from "../../firebase.js";  // Manteniendo auth y onAuthStateChanged aquí por ahora
 import { onAuthStateChanged } from 'firebase/auth';
-
 import 'react-datepicker/dist/react-datepicker.css';
 
 const VehiculoAdd = () => {
@@ -23,31 +22,31 @@ const VehiculoAdd = () => {
                 navigate("/"); // Redirigir al usuario no autenticado a la página de inicio
             }
         });
-    
+
         return () => {
-          unsubscribe();
+            unsubscribe();
         };
     }, [navigate]);
 
-    const createVehiculo = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        await axios.post("http://localhost:5000/vehiculo", {
-            Patente: Patente,
-            Marca: Marca,
-            Modelo: Modelo,
+        await createVehiculo({
+            Patente,
+            Marca,
+            Modelo,
             Ano: parseInt(Ano),
-            Fecha_ptte : Fecha_ptte,
-            Fecha_rvs: Fecha_rvs,
+            Fecha_ptte,
+            Fecha_rvs
         });
         navigate("/vehiculo"); // Después de crear el vehículo, redirigir a la página principal
-    }
+    };
 
     if (loading) return <h2>Cargando...</h2>;
 
     return (
-        <div className='max-wg-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
+        <div className='max-w-lg mx-auto my-10 bg-white p-8 rounded-xl shadow shadow-slate-300'>
             <h4><center>Agregar Vehiculo</center></h4><br></br>
-            <form onSubmit={createVehiculo} className='my-10'>
+            <form onSubmit={handleSubmit} className='my-10'>
                 <div className='flex flex-col'>
                     <div className='form-group mb-5'>
                         <label className='font-bold text-slate-700'>Patente: </label>
@@ -77,7 +76,7 @@ const VehiculoAdd = () => {
                 </div>
             </form>
         </div>
-    )
-}
+    );
+};
 
 export default VehiculoAdd;
