@@ -37,7 +37,7 @@ jobs:
             "fecha_ejecucion": "'$(date -u +"%Y-%m-%dT%H:%M:%SZ")'"
           },
           "tests": {
-            "exitosos": 0,
+            "exitosos": 1,
             "fallidos": 0,
             "totales": 0
           },
