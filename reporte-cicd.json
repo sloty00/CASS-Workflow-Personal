@@ -1,16 +1,15 @@
 {
   "proyecto": "CASS-Workflow-Personal",
   "rama": "base-version",
-  "commit": "5bc205fd0e7b2c776fb51d84eb2c2b0fa9b77315",
+  "commit": "8bbb076ef3c913ef7bc429078f56b0e5d7b3f64f",
   "pipeline": {
-    "estado": "SUCCESS",
-    "fecha_ejecucion": "2026-06-04T03:01:12Z"
+    "estado": "success",
+    "fecha_ejecucion": "2026-06-04T22:31:45Z"
   },
   "tests": {
-    "totales": 12,
-    "exitosos": 12,
+    "exitosos": 0,
     "fallidos": 0,
-    "cobertura_codigo": "94%"
+    "totales": 0
   },
-  "detalles": "Ecosistema empresarial (Backend + Frontend) integrado correctamente en la nube."
+  "detalles": "Pipeline ejecutado correctamente."
 }
