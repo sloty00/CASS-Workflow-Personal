@@ -1,13 +1,13 @@
 {
   "proyecto": "CASS-Workflow-Personal",
   "rama": "base-version",
-  "commit": "8bbb076ef3c913ef7bc429078f56b0e5d7b3f64f",
+  "commit": "714f560bd871c2fffd030c17c754fd53a82d599b",
   "pipeline": {
     "estado": "success",
-    "fecha_ejecucion": "2026-06-04T22:31:45Z"
+    "fecha_ejecucion": "2026-06-04T22:36:34Z"
   },
   "tests": {
-    "exitosos": 0,
+    "exitosos": 1,
     "fallidos": 0,
     "totales": 0
   },
