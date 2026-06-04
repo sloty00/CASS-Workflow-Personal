@@ -1,0 +1,49 @@
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: aliceblue;
+    /**background-image: url('https://images.pexels.com/photos/1267360/pexels-photo-1267360.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'); **/
+    background-position: center;
+    background-size: cover;
+  }
+  
+  .logo-container {
+    padding-top: 1px;
+    cursor: pointer;
+    width: 100px; 
+    height: 80px;
+  }
+  
+  .nav-container {
+    display: flex;
+  }
+  
+  .nav-container li {
+    margin: 0 10px;
+    list-style: none;
+  }
+  
+  .nav-container li a {
+    text-decoration: none;
+    color: black;
+    font-weight: 500;
+    font-size: 18px;
+  }
+  
+  .select-language {
+    appearance: none;
+    background: transparent;
+    border-style: none;
+    color: black;
+    font-weight: 500;
+    font-size: 18px;
+    outline: none;
+    cursor: pointer;
+  }
+  
+  .select-language option {
+    background: black;
+  }
+  
