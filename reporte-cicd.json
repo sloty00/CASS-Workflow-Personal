@@ -1,16 +1,15 @@
 {
-  "proyecto": "CASS-Workflow-Personal",
+  "proyecto": "CASS-Workflow-BaseVersion",
   "rama": "base-version",
-  "commit": "1da385aee2eee5bb0cfc0cbe3cd4c6debe5e2fac",
+  "commit": "b742c76c80c4ab192e44de70d228aec7eb3e1a15",
   "pipeline": {
     "estado": "success",
-    "fecha_ejecucion": "2026-06-04T22:40:13Z"
+    "fecha_ejecucion": "2026-06-06T14:50:50Z"
   },
   "tests": {
     "exitosos": 1,
     "fallidos": 0,
-    "totales": 0,
     "cobertura_codigo": "100%"
   },
-  "detalles": "Pipeline ejecutado correctamente."
+  "detalles": "Estructura profesional con carpetas separadas."
 }
