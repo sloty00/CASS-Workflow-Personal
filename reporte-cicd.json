@@ -1,15 +1,18 @@
 {
   "proyecto": "CASS-Workflow-BaseVersion",
   "rama": "base-version",
-  "commit": "b742c76c80c4ab192e44de70d228aec7eb3e1a15",
+  "commit": "3ae5d5052bb68190d00fe1342f7defa0281aab55",
   "pipeline": {
     "estado": "success",
-    "fecha_ejecucion": "2026-06-06T14:50:50Z"
+    "fecha_ejecucion": "2026-06-06T18:22:56Z"
   },
   "tests": {
     "exitosos": 1,
     "fallidos": 0,
     "cobertura_codigo": "100%"
+  },
+  "metricas": {
+    "dependencias_desactualizadas": 10
   },
   "detalles": "Estructura profesional con carpetas separadas."
 }

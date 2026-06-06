@@ -1,0 +1,72 @@
+{
+  "@prisma/client": {
+    "current": "5.13.0",
+    "wanted": "5.22.0",
+    "latest": "6.19.3",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/@prisma/client"
+  },
+  "@types/node": {
+    "current": "20.12.10",
+    "wanted": "20.19.42",
+    "latest": "25.9.2",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/@types/node"
+  },
+  "cors": {
+    "current": "2.8.5",
+    "wanted": "2.8.6",
+    "latest": "2.8.6",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/cors"
+  },
+  "dotenv": {
+    "current": "16.4.5",
+    "wanted": "16.6.1",
+    "latest": "17.4.2",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/dotenv"
+  },
+  "express": {
+    "current": "4.19.2",
+    "wanted": "4.22.2",
+    "latest": "5.2.1",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/express"
+  },
+  "express-jwt": {
+    "current": "8.4.1",
+    "wanted": "8.5.1",
+    "latest": "8.5.1",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/express-jwt"
+  },
+  "jsonwebtoken": {
+    "current": "9.0.2",
+    "wanted": "9.0.3",
+    "latest": "9.0.3",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/jsonwebtoken"
+  },
+  "nodemon": {
+    "current": "3.1.0",
+    "wanted": "3.1.14",
+    "latest": "3.1.14",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/nodemon"
+  },
+  "prisma": {
+    "current": "5.13.0",
+    "wanted": "5.22.0",
+    "latest": "6.19.3",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/prisma"
+  },
+  "typescript": {
+    "current": "5.4.5",
+    "wanted": "5.9.3",
+    "latest": "6.0.3",
+    "dependent": "backend",
+    "location": "/home/runner/work/CASS-Workflow-Personal/CASS-Workflow-Personal/backend/node_modules/typescript"
+  }
+}
