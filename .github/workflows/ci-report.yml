@@ -25,6 +25,13 @@ jobs:
           # Aquí puedes poner tus comandos de Prisma si los necesitas
           # npx prisma generate 
 
+      - name: Verificar dependencias desactualizadas
+        run: |
+          cd backend
+          npm outdated --json > outdated-deps.json || true
+          COUNT=$(node -e 'try { const r=JSON.parse(require("fs").readFileSync("outdated-deps.json", "utf8")); console.log(Object.keys(r).length); } catch(e) { console.log(0); }')
+          echo "DEPS_DESACTUALIZADAS=$COUNT" >> $GITHUB_ENV
+
       - name: Generar reporte automatico
         if: always()
         run: |
@@ -49,6 +56,9 @@ jobs:
               "exitosos": '$EXITOSOS',
               "fallidos": '$FALLIDOS',
               "cobertura_codigo": "100%"
+            },
+            "metricas": {
+              "dependencias_desactualizadas": '${{ env.DEPS_DESACTUALIZADAS }}'
             },
             "detalles": "Estructura profesional con carpetas separadas."
           }' > reporte-cicd.json
