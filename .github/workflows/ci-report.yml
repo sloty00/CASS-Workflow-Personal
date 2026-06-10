@@ -60,7 +60,7 @@ jobs:
             "metricas": {
               "dependencias_desactualizadas": '${{ env.DEPS_DESACTUALIZADAS }}'
             },
-            "detalles": "Estructura profesional con carpetas separadas."
+            "detalles": "Auditoría de seguridad: Análisis de dependencias completado en entorno Node.js 18."
           }' > reporte-cicd.json
 
       - name: Desplegar reporte
